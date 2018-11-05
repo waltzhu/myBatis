@@ -1,0 +1,117 @@
+建造者模式中一个常见的例子就是StringBuilder。
+
+建造者模式可以说是对工厂模式的扩展，工厂类提供了生产单个产品的功能，而建造者模式则可以将各种产品集中起来进行统一管理。工厂模式关注的是整个产品，建造者模式关注的是产品各组成部分的创建过程。
+
+比如要创建一辆车，你只关心汽车本身（之后加以使用），就用工厂模式创建；若还关注该汽车的各部分是怎么造出来的（或者不同的工厂对产品的各部分的造法不同，就用Builder）。如StringBuilder对字符串的整合，append()、delete（）、insert()改变数据。
+
+产品建造接口类：
+
+public interface build {
+   public void  makeA();
+   public void  makeB();
+   public void  makeC();
+   public Product getProduct();
+}
+产品建造实现类：只与具体产品耦合
+public class productBuild implements build {
+Product product;
+public productBuild(){
+this.product=new Product();
+}
+public void makeA() {
+product.setA(“A is done”);
+}
+public void makeB() {
+product.setB(“B is done”);
+}
+public void makeC() {
+product.setC(“C is done”);
+}
+public Product getProduct() {
+return this.product;
+}
+}
+产品类：
+public class Product {
+   public String A=””;
+   public String B=””;
+   public String C=””;
+public String getA() {
+return A;
+}
+public void setA(String a) {
+A = a;
+}
+public String getB() {
+return B;
+}
+public void setB(String b) {
+B = b;
+}
+public String getC() {
+return C;
+}
+public void setC(String c) {
+C = c;
+}
+}
+导演类：负责与用户打交道，并且提供多种产品，每一种产品细节组装也在这里
+public class director {
+   public build bl;
+   public director(){
+   this.bl=new productBuild();
+   }
+   public Product bulidProduct(){
+   bl.makeA();
+   bl.makeB();
+   bl.makeC();
+   return bl.getProduct();
+   }
+}
+测试类：
+public class test {
+  public static void main(String[] args) {
+  director dr=new director();
+  Product p=dr.bulidProduct();
+  System.out.println(p.getA());
+  System.out.println(p.getB());
+  System.out.println(p.getC());
+}
+}
+结果：
+A is done
+B is done
+C is done
+          //如果没有导演类
+  //问题：1.此客户端代码与建造耦合，如果建造修改，客户端也要改 2.没有封装，对外顺序管理太乱
+  productBuild pb=new productBuild();
+  pb.makeA();
+  pb.makeB();
+  pb.makeC();
+  pb.getProduct();
+  System.out.println(p.getA());
+  System.out.println(p.getB());
+  System.out.println(p.getC());
+补充：
+导演类起到封装的作用，避免高层模块深入到建造者内部的实现类。当然，在建造者模式比较庞大时，导演类可以有多个。
+
+建造者模式的优点：
+
+封装性  使用建造者模式可以是客户端不必知道产品内部组成的细节。
+建造者独立，容易扩展
+便于控制细节风险  由于具体的建造者是独立的，因此可以对建造过程逐步细化，而不对其他的模块产生任何影响。
+建造者模式的使用场景：
+
+建造者模式的表述：将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。
+
+     用了建造者模式，用户只需指定需要建造的类型就可以得到它们，而具体的过程和细节就不需要知道了。而建造者中的一个非常重要的类就是指挥者类，它用来控制建造过程，也用它来隔离用户与建造过程的关联。
+     指挥者类是建造模式的核心和灵魂所在，主要完成同样的构建过程可以创建不同的表示。从上面的例子可以看到，如果缺少指挥者类，那么就不能算是建造者模式了，只能说是定义了一个接口或抽象类，规定了必须实现哪些功能罢了。指挥者类，不仅指出了对象的建造顺序，还把用户与建造过程分离，并为可能发生的变化提供了一个灵活的处理方法，使建造顺序的改变或需求的改变不会引起大的改动也不会改变程序的结构。
+相同的方法，不同的执行顺序，产生不同的事件结果时，可以采用建造者模式。
+多个部件或零件，都可以装配到一个对象中，但是产生的运行结果又不相同时，则可以使用该模式。
+产品类非常复杂，或者产品类中的调用顺序不同产生了不同的效能，这个时候使用建造者模式非常合适。
+在对象的创建过程中会使用到系统中的一些其他对象，这些对象在产品对象的创建过程中不易得到时，也可以使用建造者模式封装该对象的创建过程。该种场景只能是一个补偿方法，因为一个对象不容易获得，而在设计阶段竟然没有发觉，而要通过创建者模式柔化创建过程，这本身已经违反设计的最初目标。
+创建者模式的注意事项：
+
+创建者模式关注的是零件类型和装配工艺（顺序），这是它与工厂方法模式最大不同的地方。
+
+建造者模式最主要的功能是基本方法的调用顺序安排，也就是这些基本方法已经实现了，通俗地说就是零件的装配，顺序不同产生的对象也不同；而工厂方法则重点是创建，创建零件是它的主要责任，组装顺序则不是它关系的。
